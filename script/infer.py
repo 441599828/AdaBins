@@ -64,31 +64,23 @@ class ToTensor(object):
 
 
 class InferenceHelper:
-    def __init__(self, dataset='nyu', device='cuda:0'):
+    def __init__(self, dataset='kitti',device='cuda:0', pretrained_path=None):
         self.toTensor = ToTensor()
         self.device = device
-        if dataset == 'nyu':
-            self.min_depth = 1e-3
-            self.max_depth = 10
-            self.saving_factor = 1000  # used to save in 16 bit
-            model = UnetAdaptiveBins.build(n_bins=256, min_val=self.min_depth, max_val=self.max_depth)
-            pretrained_path = "./pretrained/AdaBins_nyu.pt"
-        elif dataset == 'kitti':
-            self.min_depth = 1e-3
-            self.max_depth = 80
+        if dataset == 'Carla':
+            self.min_depth = 0.6
+            self.max_depth = 235.0
             self.saving_factor = 256
             model = UnetAdaptiveBins.build(n_bins=256, min_val=self.min_depth, max_val=self.max_depth)
-            pretrained_path = "./pretrained/AdaBins_kitti.pt"
+            pretrained_path = pretrained_path
         else:
-            raise ValueError("dataset can be either 'nyu' or 'kitti' but got {}".format(dataset))
-
+            raise ValueError("dataset should be 'Carla' but got {}".format(dataset))
         model, _, _ = model_io.load_checkpoint(pretrained_path, model)
         model.eval()
         self.model = model.to(self.device)
 
     @torch.no_grad()
     def predict_pil(self, pil_image, visualized=False):
-        # pil_image = pil_image.resize((640, 480))
         img = np.asarray(pil_image) / 255.
 
         img = self.toTensor(img).unsqueeze(0).float().to(self.device)
@@ -96,7 +88,6 @@ class InferenceHelper:
 
         if visualized:
             viz = utils.colorize(torch.from_numpy(pred).unsqueeze(0), vmin=None, vmax=None, cmap='magma')
-            # pred = np.asarray(pred*1000, dtype='uint16')
             viz = Image.fromarray(viz)
             return bin_centers, pred, viz
         return bin_centers, pred
@@ -152,10 +143,19 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     from time import time
 
-    img = Image.open("test_imgs/classroom__rgb_00283.jpg")
-    start = time()
-    inferHelper = InferenceHelper()
-    centers, pred = inferHelper.predict_pil(img)
-    print(f"took :{time() - start}s")
-    plt.imshow(pred.squeeze(), cmap='magma_r')
-    plt.show()
+    # inferHelper = InferenceHelper(dataset="Carla",
+    #                               pretrained_path="/home/whn/PycharmProjects/DepthPrediction/AdaBins/result/1234train5test/UnetAdaptiveBins_16-Dec_20-32-nodebs15-tep80-lr0.000357-wd0.1-07c859b2-c41f-4c3b-89cc-95213693bd21_best.pt")
+    inferHelper = InferenceHelper(dataset="Carla",
+                                  pretrained_path="/home/whn/PycharmProjects/DepthPrediction/AdaBins/result/carla_dataset_result/UnetAdaptiveBins_26-Dec_16-21-nodebs12-tep100-lr0.000357-wd0.1-08ebf621-ca04-4cf9-8db8-924a4c9e99fe_best.pt")
+
+    root = "/home/whn/PycharmProjects/DepthPrediction/AdaBins/result/carla_img_for_visual"
+    files = os.listdir(root)
+    for file in files:
+        img = Image.open(os.path.join(root, file))
+        start = time()
+        centers, pred, viz = inferHelper.predict_pil(img, visualized=True)
+        print(f"took :{time() - start}s")
+        viz.save(
+            os.path.join(
+                '/home/whn/PycharmProjects/DepthPrediction/AdaBins/result/carla_dataset_result',
+                file))

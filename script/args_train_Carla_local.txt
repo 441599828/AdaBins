@@ -1,0 +1,27 @@
+--bs 1
+--dataset Carla
+--lr 0.000357
+--wd 0.1
+--div_factor 25
+--final_div_factor 100
+--epochs 100
+--workers 11
+--name UnetAdaptiveBins
+--n_bins 256
+--norm=linear
+--w_chamfer 0.1
+--data_path /media/whn/新加卷/dataset/carla/Data/train/rgb
+--gt_path /media/whn/新加卷/dataset/carla/Data/train/depth
+--filenames_file /media/whn/新加卷/dataset/carla/Data/Carla_train_files_with_gt.txt
+--input_height 288
+--input_width 512
+--do_random_rotate
+--degree 1.0
+--min_depth 0.6
+--max_depth 235.0
+--data_path_eval /media/whn/新加卷/dataset/carla/Data/val/rgb
+--gt_path_eval /media/whn/新加卷/dataset/carla/Data/val/depth
+--filenames_file_eval /media/whn/新加卷/dataset/carla/Data/Carla_val_files_with_gt.txt
+--min_depth_eval 0.6
+--max_depth_eval 235.0
+--validate-every 10

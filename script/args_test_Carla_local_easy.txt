@@ -1,0 +1,17 @@
+--data_path /media/whn/新加卷/dataset/carla/Data/train/rgb
+--gt_path /media/whn/新加卷/dataset/carla/Data/train/depth
+--filenames_file /media/whn/新加卷/dataset/carla/Data/Carla_train_files_with_gt.txt
+
+--input_height 576
+--input_width 1024
+--min_depth 0.6
+--max_depth 235.0
+
+--data_path_eval /media/whn/新加卷/dataset/carla/Data/test_easy/rgb
+--gt_path_eval /media/whn/新加卷/dataset/carla/Data/test_easy/depth
+--filenames_file_eval /media/whn/新加卷/dataset/carla/Data/Carla_testeasy_files_with_gt.txt
+--min_depth_eval 0.6
+--max_depth_eval 235.0
+--dataset Carla
+--checkpoint_path /home/whn/PycharmProjects/DepthPrediction/AdaBins/result/carla_dataset_result/UnetAdaptiveBins_26-Dec_16-21-nodebs12-tep100-lr0.000357-wd0.1-08ebf621-ca04-4cf9-8db8-924a4c9e99fe_best.pt
+--save_dir /home/whn/PycharmProjects/DepthPrediction/AdaBins/result/carla_dataset_result
